@@ -2,6 +2,20 @@ name: Publish NuGet Package
 
 on:
   workflow_dispatch:
+    inputs:
+      target_framework:
+        description: "Target framework to publish"
+        required: true
+        default: "net7.0"
+        type: choice
+        options:
+          - net7.0
+          - net8.0
+          - net9.0
+      package_version:
+        description: "Package version. Must start with the target major, for example 7.0.1 for net7.0"
+        required: true
+        default: "7.0.0"
   push:
     tags:
       - "v*"
@@ -14,19 +28,59 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Resolve release settings
+        id: release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            PACKAGE_VERSION="${GITHUB_REF_NAME#v}"
+            VERSION_MAJOR="${PACKAGE_VERSION%%.*}"
+            TARGET_FRAMEWORK="net${VERSION_MAJOR}.0"
+          else
+            PACKAGE_VERSION="${{ inputs.package_version }}"
+            TARGET_FRAMEWORK="${{ inputs.target_framework }}"
+            VERSION_MAJOR="${PACKAGE_VERSION%%.*}"
+          fi
+
+          TARGET_MAJOR="${TARGET_FRAMEWORK#net}"
+          TARGET_MAJOR="${TARGET_MAJOR%%.*}"
+
+          if [[ "${VERSION_MAJOR}" != "${TARGET_MAJOR}" ]]; then
+            echo "Package version ${PACKAGE_VERSION} must start with ${TARGET_MAJOR}.x.x for ${TARGET_FRAMEWORK}."
+            exit 1
+          fi
+
+          echo "package_version=${PACKAGE_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "target_framework=${TARGET_FRAMEWORK}" >> "$GITHUB_OUTPUT"
+          echo "dotnet_version=${TARGET_MAJOR}.0.x" >> "$GITHUB_OUTPUT"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: ${{ steps.release.outputs.dotnet_version }}
 
       - name: Restore
-        run: dotnet restore ./braspin-pagarme-dotnet-sdk.csproj
+        run: dotnet restore ./braspin-pagarme-dotnet-sdk.csproj -p:TargetFramework=${{ steps.release.outputs.target_framework }}
 
       - name: Build
-        run: dotnet build ./braspin-pagarme-dotnet-sdk.csproj --configuration Release --no-restore
+        run: >
+          dotnet build ./braspin-pagarme-dotnet-sdk.csproj
+          --configuration Release
+          --no-restore
+          -p:TargetFramework=${{ steps.release.outputs.target_framework }}
+          -p:Version=${{ steps.release.outputs.package_version }}
+          -p:PackageVersion=${{ steps.release.outputs.package_version }}
+          -p:GeneratePackageOnBuild=false
 
       - name: Pack
-        run: dotnet pack ./braspin-pagarme-dotnet-sdk.csproj --configuration Release --no-build --output ./artifacts
+        run: >
+          dotnet pack ./braspin-pagarme-dotnet-sdk.csproj
+          --configuration Release
+          --no-build
+          --output ./artifacts
+          -p:TargetFramework=${{ steps.release.outputs.target_framework }}
+          -p:Version=${{ steps.release.outputs.package_version }}
+          -p:PackageVersion=${{ steps.release.outputs.package_version }}
 
       - name: Publish to nuget.org
         run: dotnet nuget push "./artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

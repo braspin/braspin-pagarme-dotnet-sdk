@@ -179,3 +179,22 @@ Principais exceptions:
 ## Mais exemplos
 
 A pasta [examples](examples) contém exemplos para clientes, pedidos, cobranças, cartões, planos, assinaturas e marketplace.
+
+## Publicação no NuGet
+
+O workflow `.github/workflows/publish-nuget.yml` publica versões por target framework:
+
+- `net7.0` deve usar versões `7.0.x`
+- `net8.0` deve usar versões `8.0.x`
+- `net9.0` deve usar versões `9.0.x`
+
+Para publicar manualmente, execute o workflow no GitHub Actions e informe o target e a versão.
+
+Também é possível publicar via tag:
+
+```bash
+git tag v7.0.1
+git push origin v7.0.1
+```
+
+Uma tag `v8.0.0` publica para `net8.0`, `v9.0.0` publica para `net9.0`, e assim por diante.

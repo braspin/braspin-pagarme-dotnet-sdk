@@ -6,15 +6,17 @@
     <PackageId>braspin-pagarme-dotnet-sdk</PackageId>
     <RootNamespace>PagarmeSDK</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/braspin/pagarme-core-api-dotnet-framework</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/braspin/pagarme-core-api-dotnet-framework</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/braspin/braspin-pagarme-dotnet-sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/braspin/braspin-pagarme-dotnet-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <VersionPrefix>7.0.0</VersionPrefix>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>braspin</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="examples\**\*.cs" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
