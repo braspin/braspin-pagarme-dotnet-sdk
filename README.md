@@ -7,7 +7,7 @@ SDK .NET para integração com a API Core v5 da Pagar.me.
 Instale o pacote NuGet no seu projeto .NET 7:
 
 ```bash
-dotnet add package braspin-pagarme-dotnet-sdk --version 7.0.0
+dotnet add package braspin-pagarme-dotnet-sdk
 ```
 
 ## Configuração com injeção de dependência
