@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using PagarmeSDK;
@@ -64,7 +65,7 @@ namespace PagarmeSDK.Controllers
         /// </summary>
         /// <param name="transactionId">Required parameter: Example: </param>
         /// <return>Returns the Models.GetTransactionResponse response from the API call</return>
-        public async Task<Models.GetTransactionResponse> GetTransactionAsync(string transactionId)
+        public async Task<Models.GetTransactionResponse> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -91,10 +92,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -111,6 +112,8 @@ namespace PagarmeSDK.Controllers
 
     }
 } 
+
+
 
 
 

@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using PagarmeSDK;
@@ -68,7 +69,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for updating the charge metadata</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> UpdateChargeMetadataAsync(string chargeId, Models.UpdateMetadataRequest request, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> UpdateChargeMetadataAsync(string chargeId, Models.UpdateMetadataRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -100,10 +101,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -139,7 +140,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Optional parameter: Request for capturing a charge</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> CaptureChargeAsync(string chargeId, Models.CreateCaptureChargeRequest request = null, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> CaptureChargeAsync(string chargeId, Models.CreateCaptureChargeRequest request = null, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -171,10 +172,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -210,7 +211,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for updating the payment method from a charge</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> UpdateChargePaymentMethodAsync(string chargeId, Models.UpdateChargePaymentMethodRequest request, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> UpdateChargePaymentMethodAsync(string chargeId, Models.UpdateChargePaymentMethodRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -242,10 +243,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -281,7 +282,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="page">Optional parameter: Page number</param>
         /// <param name="size">Optional parameter: Page size</param>
         /// <return>Returns the Models.ListChargeTransactionsResponse response from the API call</return>
-        public async Task<Models.ListChargeTransactionsResponse> GetChargeTransactionsAsync(string chargeId, int? page = null, int? size = null)
+        public async Task<Models.ListChargeTransactionsResponse> GetChargeTransactionsAsync(string chargeId, int? page = null, int? size = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -315,10 +316,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -354,7 +355,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for updating the due date</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> UpdateChargeDueDateAsync(string chargeId, Models.UpdateChargeDueDateRequest request, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> UpdateChargeDueDateAsync(string chargeId, Models.UpdateChargeDueDateRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -386,10 +387,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -455,7 +456,7 @@ namespace PagarmeSDK.Controllers
                 string customerId = null,
                 string orderId = null,
                 DateTime? createdSince = null,
-                DateTime? createdUntil = null)
+                DateTime? createdUntil = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -490,10 +491,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -529,7 +530,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for updating a charge's card</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> UpdateChargeCardAsync(string chargeId, Models.UpdateChargeCardRequest request, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> UpdateChargeCardAsync(string chargeId, Models.UpdateChargeCardRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -561,10 +562,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -596,7 +597,7 @@ namespace PagarmeSDK.Controllers
         /// </summary>
         /// <param name="chargeId">Required parameter: Charge id</param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> GetChargeAsync(string chargeId)
+        public async Task<Models.GetChargeResponse> GetChargeAsync(string chargeId, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -623,10 +624,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -662,7 +663,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="createdSince">Optional parameter: Example: </param>
         /// <param name="createdUntil">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargesSummaryResponse response from the API call</return>
-        public async Task<Models.GetChargesSummaryResponse> GetChargesSummaryAsync(string status, DateTime? createdSince = null, DateTime? createdUntil = null)
+        public async Task<Models.GetChargesSummaryResponse> GetChargesSummaryAsync(string status, DateTime? createdSince = null, DateTime? createdUntil = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -691,10 +692,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -728,7 +729,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="chargeId">Required parameter: Charge id</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> RetryChargeAsync(string chargeId, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> RetryChargeAsync(string chargeId, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -756,10 +757,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Post(_queryUrl, _headers, null, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.Post(_queryUrl, _headers, null, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -795,7 +796,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Optional parameter: Request for cancelling a charge</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> CancelChargeAsync(string chargeId, Models.CreateCancelChargeRequest request = null, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> CancelChargeAsync(string chargeId, Models.CreateCancelChargeRequest request = null, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -827,10 +828,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.DeleteBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.DeleteBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -864,7 +865,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for creating a charge</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> CreateChargeAsync(Models.CreateChargeRequest request, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> CreateChargeAsync(Models.CreateChargeRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -890,10 +891,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -929,7 +930,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Optional parameter: Request for confirm payment</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetChargeResponse response from the API call</return>
-        public async Task<Models.GetChargeResponse> ConfirmPaymentAsync(string chargeId, Models.CreateConfirmPaymentRequest request = null, string idempotencyKey = null)
+        public async Task<Models.GetChargeResponse> ConfirmPaymentAsync(string chargeId, Models.CreateConfirmPaymentRequest request = null, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -961,10 +962,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -981,6 +982,8 @@ namespace PagarmeSDK.Controllers
 
     }
 } 
+
+
 
 
 

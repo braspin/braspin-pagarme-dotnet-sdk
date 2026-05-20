@@ -144,6 +144,22 @@ var client = new PagarmeClient("sua_public_key", "sua_secret_key");
 var charge = client.Charges.GetCharge("ch_exemplo");
 ```
 
+## CancellationToken
+
+Todos os métodos assíncronos aceitam `CancellationToken`:
+
+```csharp
+using PagarmeSDK;
+
+var client = new PagarmeClient("sua_public_key", "sua_secret_key");
+
+using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+var charge = await client.Charges.GetChargeAsync(
+    "ch_exemplo",
+    cancellationTokenSource.Token);
+```
+
 ## Tratamento de erros
 
 O SDK lança exceptions específicas por tipo de erro retornado pela API:

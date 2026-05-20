@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using PagarmeSDK.Http.Request;
 using PagarmeSDK.Http.Response;
 using PagarmeSDK.Utilities;
@@ -15,8 +16,8 @@ namespace PagarmeSDK.Http.Client
     public class HTTPClient
     {
         public static HTTPClient SharedClient { get; set; }
-        private readonly HttpClient _client = new HttpClient();
-		
+        private readonly HttpClient _client = new();
+
 
         static HTTPClient()
         {
@@ -37,18 +38,18 @@ namespace PagarmeSDK.Http.Client
             return t.Result;
         }
 
-        public async Task<HttpResponse> ExecuteAsStringAsync(HttpRequest request)
+        public async Task<HttpResponse> ExecuteAsStringAsync(HttpRequest request, CancellationToken cancellationToken = default)
         {
             //raise the on before request event
             RaiseOnBeforeHttpRequestEvent(request);
 
-            HttpResponseMessage responseMessage = await HttpResponseMessage(request).ConfigureAwait(false);
+            HttpResponseMessage responseMessage = await HttpResponseMessage(request, cancellationToken).ConfigureAwait(false);
 
             HttpResponse response = new HttpStringResponse
             {
                 Headers = GetCombinedResponseHeaders(responseMessage),
-                RawBody = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false),
-                Body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false),
+                RawBody = await responseMessage.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false),
+                Body = await responseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false),
                 StatusCode = (int)responseMessage.StatusCode
             };
 
@@ -64,17 +65,17 @@ namespace PagarmeSDK.Http.Client
             return t.Result;
         }
 
-        public async Task<HttpResponse> ExecuteAsBinaryAsync(HttpRequest request)
+        public async Task<HttpResponse> ExecuteAsBinaryAsync(HttpRequest request, CancellationToken cancellationToken = default)
         {
             //raise the on before request event
             RaiseOnBeforeHttpRequestEvent(request);
 
-            HttpResponseMessage responseMessage = await HttpResponseMessage(request).ConfigureAwait(false);
+            HttpResponseMessage responseMessage = await HttpResponseMessage(request, cancellationToken).ConfigureAwait(false);
 
-            HttpResponse response = new HttpResponse
+            HttpResponse response = new()
             {
                 Headers = GetCombinedResponseHeaders(responseMessage),
-                RawBody = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false),
+                RawBody = await responseMessage.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false),
                 StatusCode = (int)responseMessage.StatusCode
             };
 
@@ -104,85 +105,85 @@ namespace PagarmeSDK.Http.Client
 
 
 
-        public HttpRequest Get(string queryUrl, Dictionary<string, string> headers, string username = null, string password = null)
+        public static HttpRequest Get(string queryUrl, Dictionary<string, string> headers, string username = null, string password = null)
         {
             return new HttpRequest(HttpMethod.Get, queryUrl, headers, username, password);
         }
 
-        public HttpRequest Get(string queryUrl)
+        public static HttpRequest Get(string queryUrl)
         {
             return new HttpRequest(HttpMethod.Get, queryUrl);
         }
 
-        public HttpRequest Post(string queryUrl)
+        public static HttpRequest Post(string queryUrl)
         {
             return new HttpRequest(HttpMethod.Post, queryUrl);
         }
 
-        public HttpRequest Put(string queryUrl)
+        public static HttpRequest Put(string queryUrl)
         {
             return new HttpRequest(HttpMethod.Put, queryUrl);
         }
 
-        public HttpRequest Delete(string queryUrl)
+        public static HttpRequest Delete(string queryUrl)
         {
             return new HttpRequest(HttpMethod.Delete, queryUrl);
         }
 
-        public HttpRequest Patch(string queryUrl)
+        public static HttpRequest Patch(string queryUrl)
         {
             return new HttpRequest(new HttpMethod("PATCH"), queryUrl);
         }
 
-        public HttpRequest Post(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
+        public static HttpRequest Post(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
             string password = null)
         {
             return new HttpRequest(HttpMethod.Post, queryUrl, headers, formParameters, username, password);
         }
 
-        public HttpRequest PostBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
+        public static HttpRequest PostBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
         {
             return new HttpRequest(HttpMethod.Post, queryUrl, headers, body, username, password);
         }
 
-        public HttpRequest Put(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
+        public static HttpRequest Put(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
             string password = null)
         {
             return new HttpRequest(HttpMethod.Put, queryUrl, headers, formParameters, username, password);
         }
 
-        public HttpRequest PutBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
+        public static HttpRequest PutBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
         {
             return new HttpRequest(HttpMethod.Put, queryUrl, headers, body, username, password);
         }
 
-        public HttpRequest Patch(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
+        public static HttpRequest Patch(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
             string password = null)
         {
             return new HttpRequest(new HttpMethod("PATCH"), queryUrl, headers, formParameters, username, password);
         }
 
-        public HttpRequest PatchBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
+        public static HttpRequest PatchBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
         {
             return new HttpRequest(new HttpMethod("PATCH"), queryUrl, headers, body, username, password);
         }
 
-        public HttpRequest Delete(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
+        public static HttpRequest Delete(string queryUrl, Dictionary<string, string> headers, List<KeyValuePair<string, object>> formParameters, string username = null,
             string password = null)
         {
             return new HttpRequest(HttpMethod.Delete, queryUrl, headers, formParameters, username, password);
         }
 
-        public HttpRequest DeleteBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
+        public static HttpRequest DeleteBody(string queryUrl, Dictionary<string, string> headers, object body, string username = null, string password = null)
         {
             return new HttpRequest(HttpMethod.Delete, queryUrl, headers, body, username, password);
         }
 
 
 
-        private async Task<HttpResponseMessage> HttpResponseMessage(HttpRequest request)
+        private async Task<HttpResponseMessage> HttpResponseMessage(HttpRequest request, CancellationToken cancellationToken)
         {
-            HttpRequestMessage requestMessage = new HttpRequestMessage
+            HttpRequestMessage requestMessage = new()
             {
                 RequestUri = new Uri(request.QueryUrl),
                 Method = request.HttpMethod,
@@ -204,9 +205,8 @@ namespace PagarmeSDK.Http.Client
             {
                 if (request.Body != null)
                 {
-                    if (request.Body is FileStreamInfo)
+                    if (request.Body is FileStreamInfo file)
                     {
-                        var file = ((FileStreamInfo)request.Body);
                         requestMessage.Content = new StreamContent(file.FileStream);
                         if (!string.IsNullOrWhiteSpace(file.ContentType))
                             requestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
@@ -216,17 +216,18 @@ namespace PagarmeSDK.Http.Client
                     else if (request.Headers.Any(f => f.Key == "content-type" && f.Value == "application/json; charset=utf-8"))
                         requestMessage.Content = new StringContent((string)request.Body ?? string.Empty, Encoding.UTF8,
                             "application/json");
-                    else if (request.Headers.ContainsKey("content-type"))
+                    else if (request.Headers.TryGetValue("content-type", out string value))
                     {
                         requestMessage.Content = new ByteArrayContent(
-                            request.Body == null ? new byte[] { } : Encoding.UTF8.GetBytes((string)request.Body));
+                            request.Body == null ? ""u8.ToArray() : Encoding.UTF8.GetBytes((string)request.Body));
 
                         try
                         {
-                            requestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(request.Headers["content-type"]);
-                        } catch(Exception)
+                            requestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(value);
+                        }
+                        catch (Exception)
                         {
-                            requestMessage.Content.Headers.TryAddWithoutValidation("content-type", request.Headers["content-type"]);
+                            requestMessage.Content.Headers.TryAddWithoutValidation("content-type", value);
                         }
                     }
                     else
@@ -235,12 +236,11 @@ namespace PagarmeSDK.Http.Client
                 }
                 else if (request.FormParameters != null && request.FormParameters.Any(f => f.Value is FileStreamInfo))
                 {
-                    MultipartFormDataContent formContent = new MultipartFormDataContent();
+                    MultipartFormDataContent formContent = new();
                     foreach (var param in request.FormParameters)
                     {
-                        if (param.Value is FileStreamInfo)
+                        if (param.Value is FileStreamInfo fileInfo)
                         {
-                            FileStreamInfo fileInfo = (FileStreamInfo)param.Value;
                             var fileContent = new StreamContent(fileInfo.FileStream);
                             if (string.IsNullOrEmpty(fileInfo.FileName))
                                 fileInfo.FileName = "file";
@@ -270,7 +270,7 @@ namespace PagarmeSDK.Http.Client
                     requestMessage.Content = new FormUrlEncodedContent(parameters);
                 }
             }
-            return await _client.SendAsync(requestMessage).ConfigureAwait(false);
+            return await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
         private static Dictionary<string, string> GetCombinedResponseHeaders(HttpResponseMessage responseMessage)

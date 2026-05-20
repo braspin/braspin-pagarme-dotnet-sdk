@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using PagarmeSDK;
@@ -68,7 +69,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="request">Required parameter: Request for creating a token</param>
         /// <param name="idempotencyKey">Optional parameter: Example: </param>
         /// <return>Returns the Models.GetTokenResponse response from the API call</return>
-        public async Task<Models.GetTokenResponse> CreateTokenAsync(string publicKey, Models.CreateTokenRequest request, string idempotencyKey = null)
+        public async Task<Models.GetTokenResponse> CreateTokenAsync(string publicKey, Models.CreateTokenRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -100,10 +101,10 @@ namespace PagarmeSDK.Controllers
             var _body = APIHelper.JsonSerialize(request);
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.PostBody(_queryUrl, _headers, _body);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -137,7 +138,7 @@ namespace PagarmeSDK.Controllers
         /// <param name="id">Required parameter: Token id</param>
         /// <param name="publicKey">Required parameter: Public key</param>
         /// <return>Returns the Models.GetTokenResponse response from the API call</return>
-        public async Task<Models.GetTokenResponse> GetTokenAsync(string id, string publicKey)
+        public async Task<Models.GetTokenResponse> GetTokenAsync(string id, string publicKey, CancellationToken cancellationToken = default)
         {
             //the base uri for api requests
             string _baseUri = Configuration.BaseUri;
@@ -165,10 +166,10 @@ namespace PagarmeSDK.Controllers
             };
 
             //prepare the API call request to fetch the response
-            HttpRequest _request = ClientInstance.Get(_queryUrl,_headers);
+            HttpRequest _request = HTTPClient.Get(_queryUrl,_headers);
 
             //invoke request and get response
-            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request).ConfigureAwait(false);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
             HttpContext _context = new HttpContext(_request,_response);
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
@@ -185,6 +186,8 @@ namespace PagarmeSDK.Controllers
 
     }
 } 
+
+
 
 
 
