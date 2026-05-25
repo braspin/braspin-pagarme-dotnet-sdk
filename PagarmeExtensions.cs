@@ -73,8 +73,8 @@ namespace PagarmeSDK
                 Configuration.BaseUri = options.BaseUrl.TrimEnd('/');
             }
 
-            Configuration.BasicAuthUserName = options.PublicKey;
-            Configuration.BasicAuthPassword = options.SecretKey;
+            Configuration.BasicAuthUserName = options.SecretKey;
+            Configuration.BasicAuthPassword = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(options.UserAgent))
             {
