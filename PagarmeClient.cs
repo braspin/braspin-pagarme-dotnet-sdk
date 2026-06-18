@@ -91,6 +91,39 @@ namespace PagarmeSDK
         }
 
         /// <summary>
+        /// Singleton access to PaymentLinks controller
+        /// </summary>
+        public PaymentLinksController PaymentLinks
+        {
+            get
+            {
+                return PaymentLinksController.Instance;
+            }
+        }
+
+        /// <summary>
+        /// Singleton access to Receivables controller
+        /// </summary>
+        public ReceivablesController Receivables
+        {
+            get
+            {
+                return ReceivablesController.Instance;
+            }
+        }
+
+        /// <summary>
+        /// Singleton access to Disputes controller
+        /// </summary>
+        public DisputesController Disputes
+        {
+            get
+            {
+                return DisputesController.Instance;
+            }
+        }
+
+        /// <summary>
         /// Singleton access to Recipients controller
         /// </summary>
         public RecipientsController Recipients

@@ -171,6 +171,167 @@ namespace PagarmeSDK.Controllers
         }
 
         /// <summary>
+        /// Creates a transfer using the current V5 endpoint.
+        /// </summary>
+        /// <param name="request">Required parameter: Transfer data</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTransferResponse response from the API call</return>
+        public Models.GetTransferResponse CreateTransfer(Models.CreateTransferRequest request, string idempotencyKey = null)
+        {
+            Task<Models.GetTransferResponse> t = CreateTransferAsync(request, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Creates a transfer using the current V5 endpoint.
+        /// </summary>
+        /// <param name="request">Required parameter: Transfer data</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTransferResponse response from the API call</return>
+        public async Task<Models.GetTransferResponse> CreateTransferAsync(Models.CreateTransferRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/transfers");
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" },
+                { "idempotency-key", idempotencyKey }
+            };
+
+            var _body = APIHelper.JsonSerialize(request);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetTransferResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
+        /// Cancels a transfer.
+        /// </summary>
+        /// <param name="transferId">Required parameter: Transfer id</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTransferResponse response from the API call</return>
+        public Models.GetTransferResponse CancelTransfer(string transferId, string idempotencyKey = null)
+        {
+            Task<Models.GetTransferResponse> t = CancelTransferAsync(transferId, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Cancels a transfer.
+        /// </summary>
+        /// <param name="transferId">Required parameter: Transfer id</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTransferResponse response from the API call</return>
+        public async Task<Models.GetTransferResponse> CancelTransferAsync(string transferId, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/transfers/{transfer_id}/cancel");
+
+            APIHelper.AppendUrlWithTemplateParameters(_queryBuilder, new Dictionary<string, object>()
+            {
+                { "transfer_id", transferId }
+            });
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" },
+                { "idempotency-key", idempotencyKey }
+            };
+
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, null, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetTransferResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a transfer receipt.
+        /// </summary>
+        /// <param name="transferId">Required parameter: Transfer id</param>
+        /// <return>Returns the Models.PagarmeObjectResponse response from the API call</return>
+        public Models.PagarmeObjectResponse GetTransferReceipt(string transferId)
+        {
+            Task<Models.PagarmeObjectResponse> t = GetTransferReceiptAsync(transferId);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Retrieves a transfer receipt.
+        /// </summary>
+        /// <param name="transferId">Required parameter: Transfer id</param>
+        /// <return>Returns the Models.PagarmeObjectResponse response from the API call</return>
+        public async Task<Models.PagarmeObjectResponse> GetTransferReceiptAsync(string transferId, CancellationToken cancellationToken = default)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/transfers/{transfer_id}/receipt");
+
+            APIHelper.AppendUrlWithTemplateParameters(_queryBuilder, new Dictionary<string, object>()
+            {
+                { "transfer_id", transferId }
+            });
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" }
+            };
+
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, null, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.PagarmeObjectResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
         /// Gets all transfers
         /// </summary>
         /// <return>Returns the Models.ListTransfers response from the API call</return>

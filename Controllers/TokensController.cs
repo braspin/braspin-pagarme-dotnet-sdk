@@ -120,6 +120,58 @@ namespace PagarmeSDK.Controllers
         }
 
         /// <summary>
+        /// Creates a card token using the current V5 endpoint.
+        /// </summary>
+        /// <param name="request">Required parameter: Request for creating a token</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTokenResponse response from the API call</return>
+        public Models.GetTokenResponse CreateToken(Models.CreateTokenRequest request, string idempotencyKey = null)
+        {
+            Task<Models.GetTokenResponse> t = CreateTokenAsync(request, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Creates a card token using the current V5 endpoint.
+        /// </summary>
+        /// <param name="request">Required parameter: Request for creating a token</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetTokenResponse response from the API call</return>
+        public async Task<Models.GetTokenResponse> CreateTokenAsync(Models.CreateTokenRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/tokens");
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" },
+                { "idempotency-key", idempotencyKey }
+            };
+
+            var _body = APIHelper.JsonSerialize(request);
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetTokenResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
         /// Gets a token from its id
         /// </summary>
         /// <param name="id">Required parameter: Token id</param>

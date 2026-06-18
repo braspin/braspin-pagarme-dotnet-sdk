@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PagarmeSDK;
 using PagarmeSDK.Models;
 
@@ -15,17 +16,49 @@ namespace Example.Marketplace
 
             var request = new CreateRecipientRequest
             {
-                Name = "Tony Stark",
-                Document = "12312312312",
-                Email = "Star22k@pagar.me",
-                Type = "individual",
+                Code = "1234",
+                RegisterInformation = new CreateRecipientRegisterInformationRequest
+                {
+                    Name = "Tony Stark",
+                    Document = "12312312312",
+                    Email = "stark@pagar.me",
+                    Type = "individual",
+                    SiteUrl = "https://sitedorecebedor.com.br",
+                    MotherName = "Nome da mae",
+                    Birthdate = "1984-10-30T00:00:00",
+                    MonthlyIncome = 120000,
+                    ProfessionalOccupation = "Vendedor",
+                    Address = new CreateRecipientRegisterInformationAddressRequest
+                    {
+                        Street = "Av. General Justo",
+                        Complementary = "Bloco A",
+                        StreetNumber = "375",
+                        Neighborhood = "Centro",
+                        City = "Rio de Janeiro",
+                        State = "RJ",
+                        ZipCode = "20021130",
+                        ReferencePoint = "Ao lado da banca de jornal"
+                    },
+                    PhoneNumbers = new List<CreateRecipientRegisterInformationPhoneRequest>
+                    {
+                        new CreateRecipientRegisterInformationPhoneRequest
+                        {
+                            Ddd = "21",
+                            Number = "994647568",
+                            Type = "mobile"
+                        }
+                    }
+                },
                 DefaultBankAccount = new CreateBankAccountRequest
                 {
                     HolderName = "Tony Stark",
                     HolderDocument = "12312312312",
                     HolderType = "individual",
                     Bank = "341",
+                    BranchNumber = "1234",
+                    BranchCheckDigit = "6",
                     AccountNumber = "123",
+                    AccountCheckDigit = "6",
                     Type = "checking"
 
                 }

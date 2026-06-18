@@ -36,6 +36,7 @@ namespace PagarmeSDK.Models
         private Dictionary<string, string> metadata;
         private Models.GetAutomaticAnticipationResponse automaticAnticipationSettings;
         private Models.GetTransferSettingsResponse transferSettings;
+        private Models.CreateRecipientRegisterInformationRequest registerInformation;
         private string code;
         private string paymentMode = "bank_transfer";
 
@@ -294,6 +295,23 @@ namespace PagarmeSDK.Models
             {
                 this.transferSettings = value;
                 onPropertyChanged("TransferSettings");
+            }
+        }
+
+        /// <summary>
+        /// Recipient registration information
+        /// </summary>
+        [JsonProperty("register_information")]
+        public Models.CreateRecipientRegisterInformationRequest RegisterInformation 
+        { 
+            get 
+            {
+                return this.registerInformation; 
+            } 
+            set 
+            {
+                this.registerInformation = value;
+                onPropertyChanged("RegisterInformation");
             }
         }
 

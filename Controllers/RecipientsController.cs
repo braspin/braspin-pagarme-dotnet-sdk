@@ -256,6 +256,93 @@ namespace PagarmeSDK.Controllers
         }
 
         /// <summary>
+        /// Creates a bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="request">Required parameter: Anticipation data</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public Models.GetAnticipationResponse CreateBulkAnticipation(string recipientId, Models.CreateAnticipationRequest request, string idempotencyKey = null)
+        {
+            Task<Models.GetAnticipationResponse> t = CreateBulkAnticipationAsync(recipientId, request, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Creates a bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="request">Required parameter: Anticipation data</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public async Task<Models.GetAnticipationResponse> CreateBulkAnticipationAsync(string recipientId, Models.CreateAnticipationRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            return await ExecuteBulkAnticipationObjectAsync("POST", "/recipients/{recipient_id}/bulk_anticipations", recipientId, null, null, request, idempotencyKey, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Cancels a pending bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="bulkAnticipationId">Required parameter: Bulk anticipation id</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public Models.GetAnticipationResponse CancelBulkAnticipation(string recipientId, string bulkAnticipationId, string idempotencyKey = null)
+        {
+            Task<Models.GetAnticipationResponse> t = CancelBulkAnticipationAsync(recipientId, bulkAnticipationId, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Cancels a pending bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="bulkAnticipationId">Required parameter: Bulk anticipation id</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public async Task<Models.GetAnticipationResponse> CancelBulkAnticipationAsync(string recipientId, string bulkAnticipationId, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            return await ExecuteBulkAnticipationObjectAsync("POST", "/recipients/{recipient_id}/bulk_anticipations/{bulk_anticipation_id}/cancel", recipientId, bulkAnticipationId, null, null, idempotencyKey, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Simulates a bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="amount">Optional parameter: Anticipation amount</param>
+        /// <param name="timeframe">Optional parameter: Timeframe</param>
+        /// <param name="paymentDate">Optional parameter: Payment date</param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public Models.GetAnticipationResponse SimulateBulkAnticipation(string recipientId, int? amount = null, string timeframe = null, DateTime? paymentDate = null)
+        {
+            Task<Models.GetAnticipationResponse> t = SimulateBulkAnticipationAsync(recipientId, amount, timeframe, paymentDate);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Simulates a bulk anticipation.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="amount">Optional parameter: Anticipation amount</param>
+        /// <param name="timeframe">Optional parameter: Timeframe</param>
+        /// <param name="paymentDate">Optional parameter: Payment date</param>
+        /// <return>Returns the Models.GetAnticipationResponse response from the API call</return>
+        public async Task<Models.GetAnticipationResponse> SimulateBulkAnticipationAsync(string recipientId, int? amount = null, string timeframe = null, DateTime? paymentDate = null, CancellationToken cancellationToken = default)
+        {
+            var queryParameters = new Dictionary<string, object>()
+            {
+                { "amount", amount },
+                { "timeframe", timeframe },
+                { "payment_date", (paymentDate.HasValue) ? paymentDate.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null }
+            };
+
+            return await ExecuteBulkAnticipationObjectAsync("GET", "/recipients/{recipient_id}/bulk_anticipations/simulate", recipientId, null, queryParameters, null, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Gets the anticipation limits for a recipient
         /// </summary>
         /// <param name="recipientId">Required parameter: Recipient id</param>
@@ -318,6 +405,47 @@ namespace PagarmeSDK.Controllers
             //handle errors defined at the API level
             base.ValidateResponse(_response, _context);
 
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetAnticipationLimitResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
+        /// Gets the bulk anticipation limits for a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="timeframe">Optional parameter: Timeframe</param>
+        /// <param name="paymentDate">Optional parameter: Anticipation payment date</param>
+        /// <return>Returns the Models.GetAnticipationLimitResponse response from the API call</return>
+        public Models.GetAnticipationLimitResponse GetBulkAnticipationLimits(string recipientId, string timeframe = null, DateTime? paymentDate = null)
+        {
+            Task<Models.GetAnticipationLimitResponse> t = GetBulkAnticipationLimitsAsync(recipientId, timeframe, paymentDate);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Gets the bulk anticipation limits for a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="timeframe">Optional parameter: Timeframe</param>
+        /// <param name="paymentDate">Optional parameter: Anticipation payment date</param>
+        /// <return>Returns the Models.GetAnticipationLimitResponse response from the API call</return>
+        public async Task<Models.GetAnticipationLimitResponse> GetBulkAnticipationLimitsAsync(string recipientId, string timeframe = null, DateTime? paymentDate = null, CancellationToken cancellationToken = default)
+        {
+            var queryParameters = new Dictionary<string, object>()
+            {
+                { "timeframe", timeframe },
+                { "payment_date", (paymentDate.HasValue) ? paymentDate.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null }
+            };
+
+            HttpStringResponse _response = await ExecuteBulkAnticipationAsync("GET", "/recipients/{recipient_id}/bulk_anticipations/limits", recipientId, null, queryParameters, null, null, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(null, _response);
             try
             {
                 return APIHelper.JsonDeserialize<Models.GetAnticipationLimitResponse>(_response.Body);
@@ -522,6 +650,129 @@ namespace PagarmeSDK.Controllers
             try
             {
                 return APIHelper.JsonDeserialize<Models.GetRecipientResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
+        /// Updates recipient code
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="request">Required parameter: Recipient code</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetRecipientResponse response from the API call</return>
+        public Models.GetRecipientResponse UpdateRecipientCode(string recipientId, Models.UpdateRecipientCodeRequest request, string idempotencyKey = null)
+        {
+            Task<Models.GetRecipientResponse> t = UpdateRecipientCodeAsync(recipientId, request, idempotencyKey);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Updates recipient code
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="request">Required parameter: Recipient code</param>
+        /// <param name="idempotencyKey">Optional parameter: Example: </param>
+        /// <return>Returns the Models.GetRecipientResponse response from the API call</return>
+        public async Task<Models.GetRecipientResponse> UpdateRecipientCodeAsync(string recipientId, Models.UpdateRecipientCodeRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+        {
+            //the base uri for api requests
+            string _baseUri = Configuration.BaseUri;
+
+            //prepare query string for API call
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/recipients/{recipient_id}/code");
+
+            //process optional template parameters
+            APIHelper.AppendUrlWithTemplateParameters(_queryBuilder, new Dictionary<string, object>()
+            {
+                { "recipient_id", recipientId }
+            });
+
+
+            //validate and preprocess url
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            //append request with appropriate headers and parameters
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" },
+                { "idempotency-key", idempotencyKey }
+            };
+
+            //append body params
+            var _body = APIHelper.JsonSerialize(request);
+
+            //prepare the API call request to fetch the response
+            HttpRequest _request = HTTPClient.PatchBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            //invoke request and get response
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            //handle errors defined at the API level
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetRecipientResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
+        /// Creates a KYC link for a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <return>Returns the Models.GetRecipientKycLinkResponse response from the API call</return>
+        public Models.GetRecipientKycLinkResponse CreateRecipientKycLink(string recipientId)
+        {
+            Task<Models.GetRecipientKycLinkResponse> t = CreateRecipientKycLinkAsync(recipientId);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Creates a KYC link for a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <return>Returns the Models.GetRecipientKycLinkResponse response from the API call</return>
+        public async Task<Models.GetRecipientKycLinkResponse> CreateRecipientKycLinkAsync(string recipientId, CancellationToken cancellationToken = default)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append("/recipients/{recipient_id}/kyc_link");
+
+            APIHelper.AppendUrlWithTemplateParameters(_queryBuilder, new Dictionary<string, object>()
+            {
+                { "recipient_id", recipientId }
+            });
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" },
+                { "content-type", "application/json; charset=utf-8" }
+            };
+
+            HttpRequest _request = HTTPClient.PostBody(_queryUrl, _headers, null, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetRecipientKycLinkResponse>(_response.Body);
             }
             catch (Exception _ex)
             {
@@ -1079,6 +1330,83 @@ namespace PagarmeSDK.Controllers
         }
 
         /// <summary>
+        /// Retrieves a paginated list of bulk anticipations from a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="page">Optional parameter: Page number</param>
+        /// <param name="size">Optional parameter: Page size</param>
+        /// <param name="status">Optional parameter: Filter for anticipation status</param>
+        /// <param name="timeframe">Optional parameter: Filter for anticipation timeframe</param>
+        /// <param name="paymentDateSince">Optional parameter: Filter for start range for anticipation payment date</param>
+        /// <param name="paymentDateUntil">Optional parameter: Filter for end range for anticipation payment date</param>
+        /// <param name="createdSince">Optional parameter: Filter for start range for anticipation creation date</param>
+        /// <param name="createdUntil">Optional parameter: Filter for end range for anticipation creation date</param>
+        /// <return>Returns the Models.ListAnticipationResponse response from the API call</return>
+        public Models.ListAnticipationResponse GetBulkAnticipations(
+                string recipientId,
+                int? page = null,
+                int? size = null,
+                string status = null,
+                string timeframe = null,
+                DateTime? paymentDateSince = null,
+                DateTime? paymentDateUntil = null,
+                DateTime? createdSince = null,
+                DateTime? createdUntil = null)
+        {
+            Task<Models.ListAnticipationResponse> t = GetBulkAnticipationsAsync(recipientId, page, size, status, timeframe, paymentDateSince, paymentDateUntil, createdSince, createdUntil);
+            APIHelper.RunTaskSynchronously(t);
+            return t.Result;
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of bulk anticipations from a recipient.
+        /// </summary>
+        /// <param name="recipientId">Required parameter: Recipient id</param>
+        /// <param name="page">Optional parameter: Page number</param>
+        /// <param name="size">Optional parameter: Page size</param>
+        /// <param name="status">Optional parameter: Filter for anticipation status</param>
+        /// <param name="timeframe">Optional parameter: Filter for anticipation timeframe</param>
+        /// <param name="paymentDateSince">Optional parameter: Filter for start range for anticipation payment date</param>
+        /// <param name="paymentDateUntil">Optional parameter: Filter for end range for anticipation payment date</param>
+        /// <param name="createdSince">Optional parameter: Filter for start range for anticipation creation date</param>
+        /// <param name="createdUntil">Optional parameter: Filter for end range for anticipation creation date</param>
+        /// <return>Returns the Models.ListAnticipationResponse response from the API call</return>
+        public async Task<Models.ListAnticipationResponse> GetBulkAnticipationsAsync(
+                string recipientId,
+                int? page = null,
+                int? size = null,
+                string status = null,
+                string timeframe = null,
+                DateTime? paymentDateSince = null,
+                DateTime? paymentDateUntil = null,
+                DateTime? createdSince = null,
+                DateTime? createdUntil = null, CancellationToken cancellationToken = default)
+        {
+            var queryParameters = new Dictionary<string, object>()
+            {
+                { "page", page },
+                { "size", size },
+                { "status", status },
+                { "timeframe", timeframe },
+                { "payment_date_since", (paymentDateSince.HasValue) ? paymentDateSince.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null },
+                { "payment_date_until", (paymentDateUntil.HasValue) ? paymentDateUntil.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null },
+                { "created_since", (createdSince.HasValue) ? createdSince.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null },
+                { "created_until", (createdUntil.HasValue) ? createdUntil.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK") : null }
+            };
+
+            HttpStringResponse _response = await ExecuteBulkAnticipationAsync("GET", "/recipients/{recipient_id}/bulk_anticipations", recipientId, null, queryParameters, null, null, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(null, _response);
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.ListAnticipationResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        /// <summary>
         /// Retrieves recipient information
         /// </summary>
         /// <param name="recipientId">Required parameter: Recipiend id</param>
@@ -1544,6 +1872,62 @@ namespace PagarmeSDK.Controllers
             {
                 throw new APIException("Failed to parse the response: " + _ex.Message, _context);
             }
+        }
+
+        private async Task<Models.GetAnticipationResponse> ExecuteBulkAnticipationObjectAsync(string method, string path, string recipientId, string bulkAnticipationId, Dictionary<string, object> queryParameters, object body, string idempotencyKey, CancellationToken cancellationToken)
+        {
+            HttpStringResponse _response = await ExecuteBulkAnticipationAsync(method, path, recipientId, bulkAnticipationId, queryParameters, body, idempotencyKey, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(null, _response);
+            try
+            {
+                return APIHelper.JsonDeserialize<Models.GetAnticipationResponse>(_response.Body);
+            }
+            catch (Exception _ex)
+            {
+                throw new APIException("Failed to parse the response: " + _ex.Message, _context);
+            }
+        }
+
+        private async Task<HttpStringResponse> ExecuteBulkAnticipationAsync(string method, string path, string recipientId, string bulkAnticipationId, Dictionary<string, object> queryParameters, object body, string idempotencyKey, CancellationToken cancellationToken)
+        {
+            string _baseUri = Configuration.BaseUri;
+            StringBuilder _queryBuilder = new StringBuilder(_baseUri);
+            _queryBuilder.Append(path);
+
+            APIHelper.AppendUrlWithTemplateParameters(_queryBuilder, new Dictionary<string, object>()
+            {
+                { "recipient_id", recipientId },
+                { "bulk_anticipation_id", bulkAnticipationId }
+            });
+
+            APIHelper.AppendUrlWithQueryParameters(_queryBuilder, queryParameters, ArrayDeserializationFormat, ParameterSeparator);
+
+            string _queryUrl = APIHelper.CleanUrl(_queryBuilder);
+            var _headers = new Dictionary<string,string>()
+            {
+                { "user-agent", Configuration.UserAgent },
+                { "accept", "application/json" }
+            };
+
+            if (body != null || method == "POST")
+            {
+                _headers.Add("content-type", "application/json; charset=utf-8");
+            }
+
+            if (idempotencyKey != null)
+            {
+                _headers.Add("idempotency-key", idempotencyKey);
+            }
+
+            string _body = body == null ? null : APIHelper.JsonSerialize(body);
+            HttpRequest _request = method == "POST"
+                ? HTTPClient.PostBody(_queryUrl, _headers, _body, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword)
+                : HTTPClient.Get(_queryUrl, _headers, Configuration.BasicAuthUserName, Configuration.BasicAuthPassword);
+
+            HttpStringResponse _response = (HttpStringResponse) await ClientInstance.ExecuteAsStringAsync(_request, cancellationToken).ConfigureAwait(false);
+            HttpContext _context = new HttpContext(_request,_response);
+            base.ValidateResponse(_response, _context);
+            return _response;
         }
 
     }

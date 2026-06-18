@@ -21,30 +21,28 @@ namespace PagarmeSDK.Models
     public class CreateRecipientRequest : BaseModel 
     {
         // These fields hold the values for the public properties.
-        private string name;
-        private string email;
         private string description;
-        private string document;
-        private string type;
+        private Models.CreateRecipientRegisterInformationRequest registerInformation;
         private Models.CreateBankAccountRequest defaultBankAccount;
         private Dictionary<string, string> metadata;
         private Models.CreateTransferSettingsRequest transferSettings;
+        private Models.CreateAutomaticAnticipationSettingsRequest automaticAnticipationSettings;
         private string code;
         private string paymentMode = "bank_transfer";
 
         /// <summary>
         /// Recipient name
         /// </summary>
-        [JsonProperty("name")]
+        [JsonIgnore]
         public string Name 
         { 
             get 
             {
-                return this.name; 
+                return this.registerInformation?.Name; 
             } 
             set 
             {
-                this.name = value;
+                GetOrCreateRegisterInformation().Name = value;
                 onPropertyChanged("Name");
             }
         }
@@ -52,16 +50,16 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Recipient email
         /// </summary>
-        [JsonProperty("email")]
+        [JsonIgnore]
         public string Email 
         { 
             get 
             {
-                return this.email; 
+                return this.registerInformation?.Email; 
             } 
             set 
             {
-                this.email = value;
+                GetOrCreateRegisterInformation().Email = value;
                 onPropertyChanged("Email");
             }
         }
@@ -69,7 +67,7 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Recipient description
         /// </summary>
-        [JsonProperty("description")]
+        [JsonIgnore]
         public string Description 
         { 
             get 
@@ -86,16 +84,16 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Recipient document number
         /// </summary>
-        [JsonProperty("document")]
+        [JsonIgnore]
         public string Document 
         { 
             get 
             {
-                return this.document; 
+                return this.registerInformation?.Document; 
             } 
             set 
             {
-                this.document = value;
+                GetOrCreateRegisterInformation().Document = value;
                 onPropertyChanged("Document");
             }
         }
@@ -103,17 +101,34 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Recipient type
         /// </summary>
-        [JsonProperty("type")]
+        [JsonIgnore]
         public string Type 
         { 
             get 
             {
-                return this.type; 
+                return this.registerInformation?.Type; 
             } 
             set 
             {
-                this.type = value;
+                GetOrCreateRegisterInformation().Type = value;
                 onPropertyChanged("Type");
+            }
+        }
+
+        /// <summary>
+        /// Recipient registration information
+        /// </summary>
+        [JsonProperty("register_information")]
+        public Models.CreateRecipientRegisterInformationRequest RegisterInformation 
+        { 
+            get 
+            {
+                return this.registerInformation; 
+            } 
+            set 
+            {
+                this.registerInformation = value;
+                onPropertyChanged("RegisterInformation");
             }
         }
 
@@ -169,6 +184,23 @@ namespace PagarmeSDK.Models
         }
 
         /// <summary>
+        /// Receiver automatic anticipation information
+        /// </summary>
+        [JsonProperty("automatic_anticipation_settings")]
+        public Models.CreateAutomaticAnticipationSettingsRequest AutomaticAnticipationSettings 
+        { 
+            get 
+            {
+                return this.automaticAnticipationSettings; 
+            } 
+            set 
+            {
+                this.automaticAnticipationSettings = value;
+                onPropertyChanged("AutomaticAnticipationSettings");
+            }
+        }
+
+        /// <summary>
         /// Recipient code
         /// </summary>
         [JsonProperty("code")]
@@ -188,7 +220,7 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Payment mode
         /// </summary>
-        [JsonProperty("payment_mode")]
+        [JsonIgnore]
         public string PaymentMode 
         { 
             get 
@@ -201,6 +233,15 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("PaymentMode");
             }
         }
+
+        private Models.CreateRecipientRegisterInformationRequest GetOrCreateRegisterInformation()
+        {
+            if (this.registerInformation == null)
+            {
+                this.registerInformation = new Models.CreateRecipientRegisterInformationRequest();
+            }
+
+            return this.registerInformation;
+        }
     }
 } 
-

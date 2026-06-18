@@ -21,26 +21,24 @@ namespace PagarmeSDK.Models
     public class UpdateRecipientRequest : BaseModel 
     {
         // These fields hold the values for the public properties.
-        private string name;
-        private string email;
         private string description;
-        private string type;
         private string status;
+        private Models.CreateRecipientRegisterInformationRequest registerInformation;
         private Dictionary<string, string> metadata;
 
         /// <summary>
         /// Name
         /// </summary>
-        [JsonProperty("name")]
+        [JsonIgnore]
         public string Name 
         { 
             get 
             {
-                return this.name; 
+                return this.registerInformation?.Name; 
             } 
             set 
             {
-                this.name = value;
+                GetOrCreateRegisterInformation().Name = value;
                 onPropertyChanged("Name");
             }
         }
@@ -48,16 +46,16 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Email
         /// </summary>
-        [JsonProperty("email")]
+        [JsonIgnore]
         public string Email 
         { 
             get 
             {
-                return this.email; 
+                return this.registerInformation?.Email; 
             } 
             set 
             {
-                this.email = value;
+                GetOrCreateRegisterInformation().Email = value;
                 onPropertyChanged("Email");
             }
         }
@@ -65,7 +63,7 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Description
         /// </summary>
-        [JsonProperty("description")]
+        [JsonIgnore]
         public string Description 
         { 
             get 
@@ -80,18 +78,35 @@ namespace PagarmeSDK.Models
         }
 
         /// <summary>
+        /// Document
+        /// </summary>
+        [JsonIgnore]
+        public string Document 
+        { 
+            get 
+            {
+                return this.registerInformation?.Document; 
+            } 
+            set 
+            {
+                GetOrCreateRegisterInformation().Document = value;
+                onPropertyChanged("Document");
+            }
+        }
+
+        /// <summary>
         /// Type
         /// </summary>
-        [JsonProperty("type")]
+        [JsonIgnore]
         public string Type 
         { 
             get 
             {
-                return this.type; 
+                return this.registerInformation?.Type; 
             } 
             set 
             {
-                this.type = value;
+                GetOrCreateRegisterInformation().Type = value;
                 onPropertyChanged("Type");
             }
         }
@@ -99,7 +114,7 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Status
         /// </summary>
-        [JsonProperty("status")]
+        [JsonIgnore]
         public string Status 
         { 
             get 
@@ -110,6 +125,23 @@ namespace PagarmeSDK.Models
             {
                 this.status = value;
                 onPropertyChanged("Status");
+            }
+        }
+
+        /// <summary>
+        /// Recipient registration information
+        /// </summary>
+        [JsonProperty("register_information")]
+        public Models.CreateRecipientRegisterInformationRequest RegisterInformation 
+        { 
+            get 
+            {
+                return this.registerInformation; 
+            } 
+            set 
+            {
+                this.registerInformation = value;
+                onPropertyChanged("RegisterInformation");
             }
         }
 
@@ -129,6 +161,15 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("Metadata");
             }
         }
+
+        private Models.CreateRecipientRegisterInformationRequest GetOrCreateRegisterInformation()
+        {
+            if (this.registerInformation == null)
+            {
+                this.registerInformation = new Models.CreateRecipientRegisterInformationRequest();
+            }
+
+            return this.registerInformation;
+        }
     }
 } 
-
