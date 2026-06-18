@@ -400,5 +400,39 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("ManagingPartners");
             }
         }
+
+        /// <summary>
+        /// Validates recipient register information.
+        /// </summary>
+        public override void Validate()
+        {
+            ValidateAllowedValues("Type", this.type, "individual", "corporation", "company");
+
+            if (this.address != null)
+            {
+                this.address.Validate();
+            }
+
+            if (this.mainAddress != null)
+            {
+                this.mainAddress.Validate();
+            }
+
+            if (this.phoneNumbers != null)
+            {
+                foreach (Models.CreateRecipientRegisterInformationPhoneRequest phoneNumber in this.phoneNumbers)
+                {
+                    phoneNumber?.Validate();
+                }
+            }
+
+            if (this.managingPartners != null)
+            {
+                foreach (Models.CreateRecipientRegisterInformationRequest managingPartner in this.managingPartners)
+                {
+                    managingPartner?.Validate();
+                }
+            }
+        }
     }
 } 

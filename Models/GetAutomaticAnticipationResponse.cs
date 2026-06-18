@@ -23,9 +23,9 @@ namespace PagarmeSDK.Models
         // These fields hold the values for the public properties.
         private bool enabled;
         private string type;
-        private int volumePercentage;
-        private int delay;
-        private List<int> days;
+        private string volumePercentage;
+        private string delay;
+        private List<string> days;
 
         /// <summary>
         /// TODO: Write general description for this method
@@ -65,7 +65,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("volume_percentage")]
-        public int VolumePercentage 
+        public string VolumePercentage 
         { 
             get 
             {
@@ -82,7 +82,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("delay")]
-        public int Delay 
+        public string Delay 
         { 
             get 
             {
@@ -99,7 +99,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("days")]
-        public List<int> Days 
+        public List<string> Days 
         { 
             get 
             {

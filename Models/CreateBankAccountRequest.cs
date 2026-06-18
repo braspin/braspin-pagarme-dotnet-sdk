@@ -219,6 +219,14 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("PixKey");
             }
         }
+
+        /// <summary>
+        /// Validates bank account information.
+        /// </summary>
+        public override void Validate()
+        {
+            ValidateAllowedValues("HolderType", this.holderType, "individual", "company");
+            ValidateAllowedValues("Type", this.type, "checking", "savings");
+        }
     }
 } 
-

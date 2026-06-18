@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PagarmeSDK;
@@ -75,6 +76,39 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("TransferDay");
             }
         }
+
+        /// <summary>
+        /// Validates transfer settings.
+        /// </summary>
+        public override void Validate()
+        {
+            ValidateAllowedValues("TransferInterval", this.transferInterval, "daily", "weekly", "monthly");
+            ValidateTransferDay(this.transferInterval, this.transferDay);
+        }
+
+        internal static void ValidateTransferDay(string transferInterval, int transferDay)
+        {
+            if (string.IsNullOrWhiteSpace(transferInterval))
+            {
+                return;
+            }
+
+            string normalizedTransferInterval = transferInterval.ToLower(CultureInfo.InvariantCulture);
+
+            if (normalizedTransferInterval == "daily" && transferDay != 0)
+            {
+                throw new ArgumentException("TransferDay must be 0 when TransferInterval is daily.", "TransferDay");
+            }
+
+            if (normalizedTransferInterval == "weekly" && (transferDay < 1 || transferDay > 5))
+            {
+                throw new ArgumentException("TransferDay must be between 1 and 5 when TransferInterval is weekly.", "TransferDay");
+            }
+
+            if (normalizedTransferInterval == "monthly" && (transferDay < 1 || transferDay > 31))
+            {
+                throw new ArgumentException("TransferDay must be between 1 and 31 when TransferInterval is monthly.", "TransferDay");
+            }
+        }
     }
 } 
-

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using PagarmeSDK.Models;
 
 namespace PagarmeSDK.Utilities
 {
@@ -34,6 +35,9 @@ namespace PagarmeSDK.Utilities
         {
             if (null == obj)
                 return null;
+
+            if (obj is BaseModel model)
+                model.Validate();
 
             var settings = new JsonSerializerSettings()
             {

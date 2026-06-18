@@ -171,5 +171,13 @@ namespace PagarmeSDK.Models
 
             return this.registerInformation;
         }
+
+        /// <summary>
+        /// Validates recipient update data.
+        /// </summary>
+        public override void Validate()
+        {
+            this.registerInformation?.Validate();
+        }
     }
 } 

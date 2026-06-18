@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Newtonsoft.Json;
 namespace PagarmeSDK.Models
 {
@@ -27,6 +28,34 @@ namespace PagarmeSDK.Models
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
+        /// Validates model values before serialization.
+        /// </summary>
+        public virtual void Validate()
+        {
+        }
+
+        /// <summary>
+        /// Validates whether a string property value is in the allowed values list.
+        /// </summary>
+        /// <param name="propertyName">Name of the validated property</param>
+        /// <param name="value">Property value</param>
+        /// <param name="allowedValues">Allowed values</param>
+        protected void ValidateAllowedValues(string propertyName, string value, params string[] allowedValues)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            if (!allowedValues.Any(allowedValue => string.Equals(allowedValue, value, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new ArgumentException(
+                    string.Format("{0} must be one of: {1}. Received: {2}", propertyName, string.Join(", ", allowedValues), value),
+                    propertyName);
             }
         }
     }

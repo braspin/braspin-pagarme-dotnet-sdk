@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PagarmeSDK;
@@ -23,7 +24,7 @@ namespace PagarmeSDK.Models
         // These fields hold the values for the public properties.
         private string transferEnabled;
         private string transferInterval;
-        private string transferDay;
+        private int? transferDay;
 
         /// <summary>
         /// TODO: Write general description for this method
@@ -63,7 +64,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("transfer_day")]
-        public string TransferDay 
+        public int? TransferDay 
         { 
             get 
             {
@@ -75,6 +76,18 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("TransferDay");
             }
         }
+
+        /// <summary>
+        /// Validates transfer settings.
+        /// </summary>
+        public override void Validate()
+        {
+            ValidateAllowedValues("TransferInterval", this.transferInterval, "daily", "weekly", "monthly");
+
+            if (this.transferDay.HasValue)
+            {
+                CreateTransferSettingsRequest.ValidateTransferDay(this.transferInterval, this.transferDay.Value);
+            }
+        }
     }
 } 
-

@@ -23,9 +23,9 @@ namespace PagarmeSDK.Models
         // These fields hold the values for the public properties.
         private bool enabled;
         private string type;
-        private int volumePercentage;
-        private int delay;
-        private List<int> days;
+        private string volumePercentage;
+        private string delay;
+        private List<string> days;
 
         /// <summary>
         /// TODO: Write general description for this method
@@ -65,7 +65,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("volume_percentage")]
-        public int VolumePercentage 
+        public string VolumePercentage 
         { 
             get 
             {
@@ -82,7 +82,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("delay")]
-        public int Delay 
+        public string Delay 
         { 
             get 
             {
@@ -99,7 +99,7 @@ namespace PagarmeSDK.Models
         /// TODO: Write general description for this method
         /// </summary>
         [JsonProperty("days")]
-        public List<int> Days 
+        public List<string> Days 
         { 
             get 
             {
@@ -111,6 +111,56 @@ namespace PagarmeSDK.Models
                 onPropertyChanged("Days");
             }
         }
+
+        /// <summary>
+        /// Validates automatic anticipation settings.
+        /// </summary>
+        public override void Validate()
+        {
+            ValidateAllowedValues("Type", this.type, "full", "1025");
+            ValidateAutomaticAnticipationValues(this.volumePercentage, this.delay, this.days);
+        }
+
+        internal static void ValidateAutomaticAnticipationValues(string volumePercentage, string delay, List<string> days)
+        {
+            ValidateIntegerRange("VolumePercentage", volumePercentage, 0, 100);
+            ValidateIntegerMin("Delay", delay, 0);
+
+            if (days == null)
+            {
+                return;
+            }
+
+            foreach (string day in days)
+            {
+                ValidateIntegerRange("Days", day, 1, 31);
+            }
+        }
+
+        private static void ValidateIntegerRange(string propertyName, string value, int minValue, int maxValue)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            if (!int.TryParse(value, out int parsedValue) || parsedValue < minValue || parsedValue > maxValue)
+            {
+                throw new ArgumentException(string.Format("{0} must be an integer between {1} and {2}. Received: {3}", propertyName, minValue, maxValue, value), propertyName);
+            }
+        }
+
+        private static void ValidateIntegerMin(string propertyName, string value, int minValue)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            if (!int.TryParse(value, out int parsedValue) || parsedValue < minValue)
+            {
+                throw new ArgumentException(string.Format("{0} must be an integer greater than or equal to {1}. Received: {2}", propertyName, minValue, value), propertyName);
+            }
+        }
     }
 } 
-

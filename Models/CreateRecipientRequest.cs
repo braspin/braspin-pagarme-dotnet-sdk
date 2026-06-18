@@ -243,5 +243,16 @@ namespace PagarmeSDK.Models
 
             return this.registerInformation;
         }
+
+        /// <summary>
+        /// Validates recipient creation data.
+        /// </summary>
+        public override void Validate()
+        {
+            this.registerInformation?.Validate();
+            this.defaultBankAccount?.Validate();
+            this.transferSettings?.Validate();
+            this.automaticAnticipationSettings?.Validate();
+        }
     }
 } 
