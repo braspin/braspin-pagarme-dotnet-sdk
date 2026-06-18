@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using PagarmeSDK;
 using PagarmeSDK.Models;
 
@@ -25,7 +26,7 @@ namespace Example.Marketplace
                     Type = "individual",
                     SiteUrl = "https://sitedorecebedor.com.br",
                     MotherName = "Nome da mae",
-                    Birthdate = "1984-10-30T00:00:00",
+                    Birthdate = new DateTime(1984, 10, 30),
                     MonthlyIncome = 120000,
                     ProfessionalOccupation = "Vendedor",
                     Address = new CreateRecipientRegisterInformationAddressRequest

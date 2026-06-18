@@ -29,7 +29,7 @@ namespace PagarmeSDK.Models
         private string type;
         private string siteUrl;
         private string motherName;
-        private string birthdate;
+        private DateTime? birthdate;
         private long? monthlyIncome;
         private string professionalOccupation;
         private long? annualRevenue;
@@ -182,8 +182,9 @@ namespace PagarmeSDK.Models
         /// <summary>
         /// Recipient birthdate
         /// </summary>
+        [JsonConverter(typeof(CustomDateTimeConverter), "dd/MM/yyyy")]
         [JsonProperty("birthdate")]
-        public string Birthdate 
+        public DateTime? Birthdate 
         { 
             get 
             {
