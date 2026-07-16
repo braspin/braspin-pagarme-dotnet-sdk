@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/braspin/braspin-pagarme-dotnet-sdk</PackageProjectUrl>
     <RepositoryUrl>https://github.com/braspin/braspin-pagarme-dotnet-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <VersionPrefix>7.0.2</VersionPrefix>
+    <VersionPrefix>7.1.2</VersionPrefix>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>braspin</Authors>
   </PropertyGroup>

@@ -30,7 +30,7 @@ namespace PagarmeSDK.Models
         private string status;
         private DateTime createdAt;
         private DateTime updatedAt;
-        private DateTime deletedAt;
+        private DateTime? deletedAt;
         private Models.GetBankAccountResponse defaultBankAccount;
         private List<Models.GetGatewayRecipientResponse> gatewayRecipients;
         private Dictionary<string, string> metadata;
@@ -200,7 +200,7 @@ namespace PagarmeSDK.Models
         /// </summary>
         [JsonConverter(typeof(IsoDateTimeConverter))]
         [JsonProperty("deleted_at")]
-        public DateTime DeletedAt 
+        public DateTime? DeletedAt
         { 
             get 
             {
@@ -350,4 +350,3 @@ namespace PagarmeSDK.Models
         }
     }
 } 
-
